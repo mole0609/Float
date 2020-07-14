@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll_content"
     android:layout_width="30dp"
-    android:layout_height="30dp">
+    android:layout_height="30dp"
+    android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@mipmap/ic_launcher"/>
 
+    <com.mole.afloat.view.CircleClockView
+        android:id="@+id/timerCircle"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:circleColor="#CCCCCC"
+        app:maxTime="10000"
+        app:path="#FF6666"
+        app:ringColor="#BBBBBB"
+        app:textColor="#0099CC"
+        app:textSize="28sp"
+        app:width="10dp" />
+
+    <com.mole.afloat.view.PanelClockView
+        android:id="@+id/timerPanel"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:visibility="gone"
+        app:circleColor="#CCCCCC"
+        app:maxTime="10000"
+        app:path="#FF6666"
+        app:ringColor="#BBBBBB"
+        app:textColor="#0099CC"
+        app:textSize="28sp"
+        app:width="20dp" />
 </LinearLayout>
