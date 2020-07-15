@@ -111,7 +111,7 @@ public class ClockView extends View {
     public ClockView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ClockView);
-        mCircleColor = a.getColor(R.styleable.ClockView_circle_color, Color.argb(40, 255, 255, 255));
+        mCircleColor = a.getColor(R.styleable.ClockView_circle_color, Color.parseColor("#4DFFFFFF"));
         mHourColor = a.getColor(R.styleable.ClockView_hour_color, Color.BLACK);
         mMinuteColor = a.getColor(R.styleable.ClockView_minute_color, Color.BLACK);
         mSecondColor = a.getColor(R.styleable.ClockView_second_color, Color.RED);

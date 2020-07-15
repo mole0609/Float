@@ -4,8 +4,10 @@
 package com.mole.afloat.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Vibrator;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,12 +25,12 @@ import com.mole.afloat.utils.LogUtil;
 
 public class FloatView extends FrameLayout {
     private static final String TAG = "FloatView";
-
+    //移动的阈值
+    private static final int TOUCH_SLOP = 20;
     /**
      * 记录手指按下时在小悬浮窗的View上的横坐标的值
      */
     private float xInView;
-
     /**
      * 记录手指按下时在小悬浮窗的View上的纵坐标的值
      */
@@ -37,22 +39,20 @@ public class FloatView extends FrameLayout {
      * 记录当前手指位置在屏幕上的横坐标值
      */
     private float xInScreen;
-
     /**
      * 记录当前手指位置在屏幕上的纵坐标值
      */
     private float yInScreen;
-
     /**
      * 记录手指按下时在屏幕上的横坐标的值
      */
     private float xDownInScreen;
-
     /**
      * 记录手指按下时在屏幕上的纵坐标的值
      */
     private float yDownInScreen;
 
+    private Runnable mLongPressRunnable;
     private boolean isAnchoring = false;
     private boolean isShowing = false;
     private WindowManager windowManager = null;
@@ -60,6 +60,7 @@ public class FloatView extends FrameLayout {
     private ClockView mClockView;
     private Vibrator mVibrator;
     private long[] pattern = {100, 400, 100, 400}; // 停止 开启 停止 开启
+    private GestureDetector mGestureDetector = null;
 
     public FloatView(Context context) {
         super(context);
@@ -84,6 +85,16 @@ public class FloatView extends FrameLayout {
             }
         });
         addView(floatView);
+        mLongPressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.d(TAG, "LongPressRunnable");
+                Intent intent = new Intent();
+                intent.setClassName("com.mole.afloat", "com.mole.afloat.MainActivity");
+                getContext().startActivity(intent);
+                removeCallbacks(mLongPressRunnable);
+            }
+        };
     }
 
     public void setParams(WindowManager.LayoutParams params) {
@@ -113,6 +124,7 @@ public class FloatView extends FrameLayout {
                 yInScreen = event.getRawY();
                 // 手指移动的时候更新小悬浮窗的位置
                 updateViewPosition();
+                postDelayed(mLongPressRunnable, ViewConfiguration.getLongPressTimeout());
                 break;
             case MotionEvent.ACTION_UP:
                 if (Math.abs(xDownInScreen - xInScreen) <= ViewConfiguration.get(getContext()).getScaledTouchSlop()
@@ -127,6 +139,7 @@ public class FloatView extends FrameLayout {
                         anchorToSide();
                     }
                 }
+                removeCallbacks(mLongPressRunnable);
                 break;
             default:
                 break;

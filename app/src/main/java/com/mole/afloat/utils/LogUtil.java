@@ -88,6 +88,28 @@ public class LogUtil {
         }
     }
 
+    public static void d(String tag, String msg) {
+        if (sDebuggable) {
+            if (null != msg && msg.length() > 0) {
+                int start = 0;
+                int end = 0;
+                int len = msg.length();
+                while (true) {
+                    start = end;
+                    end = start + MAX_LOG_LINE_LENGTH;
+                    if (end >= len) {
+                        android.util.Log.d(sTag, tag + msg.substring(start, len));
+                        break;
+                    } else {
+                        android.util.Log.d(sTag, tag + msg.substring(start, end));
+                    }
+                }
+            } else {
+                android.util.Log.d(sTag, tag + msg);
+            }
+        }
+    }
+
     public static void w(String msg) {
         if (sDebuggable) {
             if (null != msg && msg.length() > 0) {
