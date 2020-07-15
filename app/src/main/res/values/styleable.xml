@@ -2,37 +2,47 @@
 <resources>
     <declare-styleable name="TimerCircle">
         <!--圆环的宽度-->
-        <attr name="width" format="dimension"></attr>
+        <attr name="width" format="dimension" />
         <!--内圆的颜色-->
-        <attr name="circleColor" format="color"></attr>
+        <attr name="circleColor" format="color" />
         <!--圆环的颜色-->
-        <attr name="ringColor" format="color"></attr>
+        <attr name="ringColor" format="color" />
         <!--倒计时时间-->
-        <attr name="maxTime" format="integer"></attr>
+        <attr name="maxTime" format="integer" />
         <!--圆环的路径颜色-->
-        <attr name="path" format="color"></attr>
+        <attr name="path" format="color" />
         <!--倒计时字体颜色-->
-        <attr name="textColor" format="color"></attr>
+        <attr name="textColor" format="color" />
         <!--倒计时字体大小-->
-        <attr name="textSize" format="dimension"></attr>
+        <attr name="textSize" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="PanelView">
         <!--圆环颜色-->
-        <attr name="ring_color" format="color"></attr>
+        <attr name="ring_color" format="color" />
         <!--内圆环颜色-->
-        <attr name="back_color" format="color"></attr>
+        <attr name="back_color" format="color" />
         <!--圆环宽度-->
-        <attr name="ring_width" format="dimension"></attr>
+        <attr name="ring_width" format="dimension" />
         <!--圆环开始的角度，需要做异常检测-270-90-->
-        <attr name="start_angle" format="integer"></attr>
+        <attr name="start_angle" format="integer" />
         <!--圆环结束的角度-->
-        <attr name="sweep_angle" format="integer"></attr>
+        <attr name="sweep_angle" format="integer" />
         <!--字体颜色-->
-        <attr name="text_color" format="color"></attr>
+        <attr name="text_color" format="color" />
         <!--字体大小-->
-        <attr name="text_size" format="dimension"></attr>
+        <attr name="text_size" format="dimension" />
         <!--路径颜色-->
-        <attr name="path_color" format="color"></attr>
+        <attr name="path_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="ClockView">
+        <attr name="circle_color" format="color" />
+        <attr name="hour_color" format="color" />
+        <attr name="minute_color" format="color" />
+        <attr name="second_color" format="color" />
+        <attr name="quarter_mark_color" format="color" />
+        <attr name="minute_mark_color" format="color" />
+        <attr name="draw_center_circle" format="boolean" />
     </declare-styleable>
 </resources>

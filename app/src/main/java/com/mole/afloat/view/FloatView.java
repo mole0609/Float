@@ -57,9 +57,10 @@ public class FloatView extends FrameLayout {
     private boolean isShowing = false;
     private WindowManager windowManager = null;
     private WindowManager.LayoutParams mParams = null;
-    private CircleClockView mCircle;
+    private ClockView mClockView;
     private Vibrator mVibrator;
-    private long [] pattern = {100,400,100,400}; // 停止 开启 停止 开启
+    private long[] pattern = {100, 400, 100, 400}; // 停止 开启 停止 开启
+
     public FloatView(Context context) {
         super(context);
         initView();
@@ -69,16 +70,20 @@ public class FloatView extends FrameLayout {
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View floatView = inflater.inflate(R.layout.float_window_layout, null);
-        mVibrator = (Vibrator)getContext().getSystemService(Context.VIBRATOR_SERVICE);
-        mCircle = new CircleClockView(getContext());
-        mCircle.setFinishListenter(new CircleClockView.onFinishListener() {
+        mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        mClockView = floatView.findViewById(R.id.clockView);
+        mClockView.setFinishListener(new ClockView.onFinishListener() {
             @Override
             public void onFinish() {
-                mVibrator.vibrate(pattern,-1);
+                boolean isVibrate = getContext().getSharedPreferences(Constant.SAVED_SHARED_PREFERENCES, Context.MODE_PRIVATE).getBoolean("isVibrate", false);
+                LogUtil.d("isVibrate = " + isVibrate);
+                if (isVibrate) {
+                    mVibrator.vibrate(pattern, -1);
+                }
                 LogUtil.d("finish");
             }
         });
-        addView(mCircle);
+        addView(floatView);
     }
 
     public void setParams(WindowManager.LayoutParams params) {
@@ -113,7 +118,6 @@ public class FloatView extends FrameLayout {
                 if (Math.abs(xDownInScreen - xInScreen) <= ViewConfiguration.get(getContext()).getScaledTouchSlop()
                         && Math.abs(yDownInScreen - yInScreen) <= ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
                     // 点击效果
-                    mCircle.setDuration(3000,3000);
                     Toast.makeText(getContext(), "this float window is clicked", Toast.LENGTH_SHORT).show();
                 } else {
                     boolean isAnchor = getContext().getSharedPreferences(Constant.SAVED_SHARED_PREFERENCES, Context.MODE_PRIVATE).getBoolean("isAnchor", false);

@@ -3,20 +3,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll_content"
-    android:layout_width="30dp"
-    android:layout_height="30dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <com.mole.afloat.view.ClockView
+        android:id="@+id/clockView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <com.mole.afloat.view.CircleClockView
         android:id="@+id/timerCircle"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         app:circleColor="#CCCCCC"
         app:maxTime="10000"
-        app:path="#FF6666"
+        app:path="#FF001B"
         app:ringColor="#BBBBBB"
-        app:textColor="#0099CC"
+        app:textColor="#370872"
         app:textSize="28sp"
         app:width="10dp" />
 

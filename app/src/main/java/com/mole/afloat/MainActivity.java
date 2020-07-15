@@ -13,6 +13,7 @@ public class MainActivity extends Activity {
     private SharedPreferences sp;
     private Context mContext;
     private Button mBtAnchor;
+    private Button mBtVibrate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class MainActivity extends Activity {
             }
         });
         mBtAnchor = findViewById(R.id.btn_anchor);
+        mBtVibrate = findViewById(R.id.btn_vibrate);
         mBtAnchor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,6 +45,18 @@ public class MainActivity extends Activity {
                     editor.putBoolean("isAnchor", !isAnchor);
                     editor.apply();
                     mBtAnchor.setText(!isAnchor + "");
+                }
+            }
+        });
+        mBtVibrate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sp != null) {
+                    final boolean isVibrate = sp.getBoolean("isVibrate", false);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putBoolean("isVibrate", !isVibrate);
+                    editor.apply();
+                    mBtVibrate.setText(!isVibrate + "");
                 }
             }
         });

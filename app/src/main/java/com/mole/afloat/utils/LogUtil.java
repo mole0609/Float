@@ -10,12 +10,8 @@ public class LogUtil {
 
     private static final int MAX_LOG_LINE_LENGTH = 4068;
 
-    // 将日志写入文件时是否加密
     private static final boolean ENCRYPT_LOG = false;
 
-    //==========================================================================
-    // Fields
-    //==========================================================================
     private static String sTag = "Float";
     private static boolean sDebuggable = true;
     private static long sTimestamp = 0;

@@ -63,7 +63,7 @@ public class CircleClockView extends View {
     //11.当前的时间是指倒计时剩余时间，需要显示在圆中
     private int currentTime;
 
-    private onFinishListener finishListenter;
+    private onFinishListener finishListener;
 
     public CircleClockView(Context context) {
         this(context, null);//12.CircleClockView circle = new CircleClockView()时调用该构造方法
@@ -82,9 +82,9 @@ public class CircleClockView extends View {
         circle_color = typedArray.getColor(R.styleable.TimerCircle_circleColor, Color.BLUE);
         ring_color = typedArray.getInteger(R.styleable.TimerCircle_ringColor, 0);
         ring_width = (int) typedArray.getDimension(R.styleable.TimerCircle_width, getResources().getDimension(R.dimen.width));
-        text_color = typedArray.getColor(R.styleable.TimerCircle_path, Color.RED);
+        text_color = typedArray.getColor(R.styleable.TimerCircle_path, Color.GREEN);
         text_size = (int) typedArray.getDimension(R.styleable.TimerCircle_textSize, getResources().getDimension(R.dimen.textSize));
-        path_color = typedArray.getColor(R.styleable.TimerCircle_path, Color.RED);
+        path_color = typedArray.getColor(R.styleable.TimerCircle_path, Color.GREEN);
         typedArray.recycle();
         InitPaint();
 
@@ -119,7 +119,7 @@ public class CircleClockView extends View {
     protected void onDraw(Canvas canvas) {
 
         //20.确定内圆的半径
-        int in_radius = (this.getWidth() - 2 * ring_width) / 2;
+        int in_radius = (this.getWidth() - 2 * ring_width) / 4;
 
         //21.确定圆的圆心
         int center = this.getWidth() - in_radius - ring_width;
@@ -151,7 +151,7 @@ public class CircleClockView extends View {
         angle_value = current_value * 360.0f / maxTime * 1.0f;
 
         //32.设置阴影大小和颜色
-        mPaint.setShadowLayer(10, 10, 10, Color.BLUE);
+        mPaint.setShadowLayer(10, 10, 10, 0);
 
         //33.指定线帽样式，可以理解为一条有宽度的直线的两端是带有弧度的
         mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -178,7 +178,7 @@ public class CircleClockView extends View {
                     //38.获取此时的进度
                     current_value = (int) animation.getAnimatedValue();
                     if (current_value == maxTime) {
-                        finishListenter.onFinish();
+                        finishListener.onFinish();
                     }
                     //39.invalidate()方法系统会自动调用 View的onDraw()方法。
                     invalidate();
@@ -245,8 +245,8 @@ public class CircleClockView extends View {
         void onFinish();
     }
 
-    public void setFinishListenter(onFinishListener listenter) {
-        this.finishListenter = listenter;
+    public void setFinishListener(onFinishListener listener) {
+        this.finishListener = listener;
     }
 
 }

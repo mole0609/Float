@@ -24,7 +24,6 @@ public class FloatWindowManager {
     private WindowManager windowManager = null;
     private WindowManager.LayoutParams mParams = null;
     private FloatView floatView = null;
-    private Dialog dialog;
 
     public static FloatWindowManager getInstance() {
         if (instance == null) {
@@ -59,6 +58,7 @@ public class FloatWindowManager {
 
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
+        LogUtil.d("size = " + size );
         int screenWidth = size.x;
         int screenHeight = size.y;
 
