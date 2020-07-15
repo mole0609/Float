@@ -98,10 +98,10 @@ public class LogUtil {
                     start = end;
                     end = start + MAX_LOG_LINE_LENGTH;
                     if (end >= len) {
-                        android.util.Log.d(sTag, tag + msg.substring(start, len));
+                        android.util.Log.d(sTag, tag + " " + msg.substring(start, len));
                         break;
                     } else {
-                        android.util.Log.d(sTag, tag + msg.substring(start, end));
+                        android.util.Log.d(sTag, tag + " " + msg.substring(start, end));
                     }
                 }
             } else {

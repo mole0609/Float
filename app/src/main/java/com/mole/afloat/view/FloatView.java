@@ -18,7 +18,9 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.mole.afloat.App;
 import com.mole.afloat.Constant;
+import com.mole.afloat.FloatWindowManager;
 import com.mole.afloat.R;
 import com.mole.afloat.utils.LogUtil;
 
@@ -51,8 +53,15 @@ public class FloatView extends FrameLayout {
      * 记录手指按下时在屏幕上的纵坐标的值
      */
     private float yDownInScreen;
+    /**
+     * 记录手指按下的时间
+     */
+    private long downTime;
+    /**
+     * 记录手指抬起的时间
+     */
+    private long upTime;
 
-    private Runnable mLongPressRunnable;
     private boolean isAnchoring = false;
     private boolean isShowing = false;
     private WindowManager windowManager = null;
@@ -60,7 +69,6 @@ public class FloatView extends FrameLayout {
     private ClockView mClockView;
     private Vibrator mVibrator;
     private long[] pattern = {100, 400, 100, 400}; // 停止 开启 停止 开启
-    private GestureDetector mGestureDetector = null;
 
     public FloatView(Context context) {
         super(context);
@@ -85,16 +93,98 @@ public class FloatView extends FrameLayout {
             }
         });
         addView(floatView);
-        mLongPressRunnable = new Runnable() {
+        floatView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void run() {
-                LogUtil.d(TAG, "LongPressRunnable");
+            public boolean onTouch(View v, MotionEvent event) {
+                mGestureDetector.onTouchEvent(event);
+                return true; // 注：返回true才能完整接收触摸事件
+            }
+        });
+    }
+
+    private Runnable mLongPressRunnable = new Runnable() {
+        @Override
+        public void run() {
+            LogUtil.d(TAG, "LongPressRunnable");
+            if (!App.isResumed) {
                 Intent intent = new Intent();
                 intent.setClassName("com.mole.afloat", "com.mole.afloat.MainActivity");
                 getContext().startActivity(intent);
-                removeCallbacks(mLongPressRunnable);
+                LogUtil.d(TAG, "startActivity");
             }
-        };
+        }
+    };
+
+    private final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent event) {
+            LogUtil.d(TAG, "onDown-----" + getActionName(event.getAction()));
+            downTime = System.currentTimeMillis();
+            xInView = event.getX();
+            yInView = event.getY();
+            xDownInScreen = event.getRawX();
+            yDownInScreen = event.getRawY();
+            xInScreen = event.getRawX();
+            yInScreen = event.getRawY();
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+            LogUtil.d(TAG, "onShowPress-----" + getActionName(e.getAction()));
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            LogUtil.d(TAG, "onSingleTapUp-----" + getActionName(e.getAction()));
+            Toast.makeText(getContext(), "this float window is clicked", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            LogUtil.d(TAG, "onScroll-----" + getActionName(e2.getAction()) + ",(" + e1.getX() + "," + e1.getY() + ") ,("
+                    + e2.getX() + "," + e2.getY() + ")" + " ,(" + distanceX + "," + distanceY + ")");
+            xInScreen = e2.getRawX();
+            yInScreen = e2.getRawY();
+            updateViewPosition();
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            LogUtil.d(TAG, "onLongPress-----" + getActionName(e.getAction()));
+            post(mLongPressRunnable);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            LogUtil.d(TAG, "onFling-----" + getActionName(e2.getAction()) + ",(" + e1.getX() + "," + e1.getY() + ") ,("
+                    + e2.getX() + "," + e2.getY() + ")" + " ,(" + velocityX + "," + velocityY + ")");
+            anchorToSide();
+            return false;
+        }
+    });
+
+    private String getActionName(int action) {
+        String name = "";
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: {
+                name = "ACTION_DOWN";
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                name = "ACTION_MOVE";
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                name = "ACTION_UP";
+                break;
+            }
+            default:
+                break;
+        }
+        return name;
     }
 
     public void setParams(WindowManager.LayoutParams params) {
@@ -105,39 +195,44 @@ public class FloatView extends FrameLayout {
         this.isShowing = isShowing;
     }
 
+    //已丢弃,touch判断点击滑动长按
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isAnchoring) {
+        if (true || isAnchoring) {
             return true;
         }
+        LogUtil.d("NYDBG", " getAction " + event.getAction());
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                downTime = System.currentTimeMillis();
                 xInView = event.getX();
                 yInView = event.getY();
                 xDownInScreen = event.getRawX();
                 yDownInScreen = event.getRawY();
                 xInScreen = event.getRawX();
                 yInScreen = event.getRawY();
+                postDelayed(mLongPressRunnable, ViewConfiguration.getLongPressTimeout());
                 break;
             case MotionEvent.ACTION_MOVE:
                 xInScreen = event.getRawX();
                 yInScreen = event.getRawY();
                 // 手指移动的时候更新小悬浮窗的位置
+                removeCallbacks(mLongPressRunnable);
                 updateViewPosition();
-                postDelayed(mLongPressRunnable, ViewConfiguration.getLongPressTimeout());
                 break;
             case MotionEvent.ACTION_UP:
+                upTime = System.currentTimeMillis();
                 if (Math.abs(xDownInScreen - xInScreen) <= ViewConfiguration.get(getContext()).getScaledTouchSlop()
                         && Math.abs(yDownInScreen - yInScreen) <= ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
                     // 点击效果
-                    Toast.makeText(getContext(), "this float window is clicked", Toast.LENGTH_SHORT).show();
-                } else {
-                    boolean isAnchor = getContext().getSharedPreferences(Constant.SAVED_SHARED_PREFERENCES, Context.MODE_PRIVATE).getBoolean("isAnchor", false);
-                    LogUtil.d("isAnchor = " + isAnchor);
-                    if (isAnchor) {
-                        //吸附效果
-                        anchorToSide();
+                    if (upTime - downTime > ViewConfiguration.getLongPressTimeout()) {
+                        Toast.makeText(getContext(), "this float window is long", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "this float window is clicked", Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    //吸附效果
+                    anchorToSide();
                 }
                 removeCallbacks(mLongPressRunnable);
                 break;
@@ -148,13 +243,17 @@ public class FloatView extends FrameLayout {
     }
 
     private void anchorToSide() {
+        boolean isAnchor = getContext().getSharedPreferences(Constant.SAVED_SHARED_PREFERENCES, Context.MODE_PRIVATE).getBoolean("isAnchor", false);
+        LogUtil.d("isAnchor = " + isAnchor);
+        if (!isAnchor) {
+            return;
+        }
         isAnchoring = true;
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
         int screenWidth = size.x;
         int screenHeight = size.y;
         int middleX = mParams.x + getWidth() / 2;
-
 
         int animTime = 0;
         int xDistance = 0;
@@ -199,11 +298,11 @@ public class FloatView extends FrameLayout {
         return (int) (dp * scale + 0.5f);
     }
 
-    private void updateViewPosition() {
+    public void updateViewPosition() {
         //增加移动误差
         mParams.x = (int) (xInScreen - xInView);
         mParams.y = (int) (yInScreen - yInView);
-        LogUtil.e("x  " + mParams.x + "   y  " + mParams.y);
+        LogUtil.d(TAG, "x  " + mParams.x + "   y  " + mParams.y);
         windowManager.updateViewLayout(this, mParams);
     }
 
