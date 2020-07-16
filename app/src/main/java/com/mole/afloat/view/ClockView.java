@@ -1,5 +1,6 @@
 package com.mole.afloat.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -7,8 +8,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 import com.mole.afloat.R;
 
@@ -18,7 +21,7 @@ import java.util.Calendar;
 public class ClockView extends View {
 
     //使用wrap_content时默认的尺寸
-    private final static int DEFAULT_SIZE = 400;
+    public final static int DEFAULT_SIZE = 400;
 
     //刻度线宽度
     private final static int MARK_WIDTH = 8;
@@ -39,7 +42,7 @@ public class ClockView extends View {
     private final static int SECOND_LINE_WIDTH = 4;
 
     //倒计时宽度
-    private final static int TIMER_LINE_WIDTH = 4;
+    private final static int TIMER_TEXT_WIDTH = 4;
 
     //圆心坐标
     private int centerX;
@@ -62,6 +65,9 @@ public class ClockView extends View {
 
     //秒针画笔
     private Paint secondPaint;
+
+    //数字画笔
+    private Paint timePaint;
 
     //时针长度
     private int hourLineLength;
@@ -98,6 +104,18 @@ public class ClockView extends View {
     //获取时间监听
     private OnCurrentTimeListener onCurrentTimeListener;
     private onFinishListener finishListener;
+    //6.指定动画的当前值，比如指定动画从0-10000。
+    private int current_value;
+    //7.进行到x秒时，对应的圆弧弧度为 x/ * 360.f x可以currentValue得出 currentValue/1000代表秒
+    private float angle_value;//圆弧角度
+    //8.通过valueAnimator我们可以获得currentValue
+    private ValueAnimator animator;
+    //9.表示valueAnimator的持续时间，这里设置为和最大倒计时时间相同
+    private float duration;
+    //10.最大倒计时时间，如果1分钟计时，这里就有600000ms，单位是ms
+    private int maxTime = 10000;
+    //11.当前的时间是指倒计时剩余时间，需要显示在圆中
+    private int currentTime;
 
     public ClockView(Context context) {
         super(context);
@@ -111,7 +129,7 @@ public class ClockView extends View {
     public ClockView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ClockView);
-        mCircleColor = a.getColor(R.styleable.ClockView_circle_color, Color.parseColor("#4DFFFFFF"));
+        mCircleColor = a.getColor(R.styleable.ClockView_circle_color, getResources().getColor(R.color.colorWatch, null));
         mHourColor = a.getColor(R.styleable.ClockView_hour_color, Color.BLACK);
         mMinuteColor = a.getColor(R.styleable.ClockView_minute_color, Color.BLACK);
         mSecondColor = a.getColor(R.styleable.ClockView_second_color, Color.RED);
@@ -121,7 +139,6 @@ public class ClockView extends View {
         a.recycle();
         init();
     }
-
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -226,6 +243,7 @@ public class ClockView extends View {
             String currentTime = intAdd0(h) + ":" + intAdd0(minute) + ":" + intAdd0(second);
             onCurrentTimeListener.currentTime(currentTime);
         }
+        drawText(canvas);
     }
 
     /**
@@ -264,6 +282,8 @@ public class ClockView extends View {
         secondPaint.setStrokeCap(Paint.Cap.ROUND);
         secondPaint.setStrokeWidth(SECOND_LINE_WIDTH);
 
+        timePaint = new Paint();
+        timePaint.setStrokeWidth(TIMER_TEXT_WIDTH);
     }
 
     /**
@@ -307,6 +327,91 @@ public class ClockView extends View {
         this.finishListener = listener;
     }
 
+    public void start(int duration, final int maxTime) {
+        //36.如果外部指定了最大倒计时的时间，则xml定义的最大倒计时无效，以外部设置的为准
+        this.maxTime = maxTime;
+        //37.持续时间和最大时间保持一致，方便计算
+        this.duration = duration;
+        if (animator != null) {
+            animator.cancel();
+        } else {
+            animator = ValueAnimator.ofInt(0, maxTime);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    //38.获取此时的进度
+                    current_value = (int) animation.getAnimatedValue();
+                    if (current_value == maxTime) {
+                        finishListener.onFinish();
+                    }
+                    //39.invalidate()方法系统会自动调用 View的onDraw()方法。
+                    invalidate();
+                }
+            });
+            //40.线性插值器，匀速变化
+            animator.setInterpolator(new LinearInterpolator());
+        }
+        animator.setDuration(duration);
+        animator.start();
+    }
+    //这里设置为10是为了避免  angleValue = currentValue/maxTime*360.0f除数为0的异常，如果既没有在xml中设置最大值就会报错，这是由绘制流程决定的。
+
+    public void cancel() {
+        if (animator != null) {
+            animator.cancel();
+        }
+    }
+
+    private void drawText(Canvas canvas) {
+        //41.计算当前的剩余的时间,单位s
+        currentTime = (maxTime - current_value) / 1000;
+
+        //42.显示的倒计时字符串
+        String Text = null;
+
+        if (currentTime < 10) {
+            Text = "00:0" + currentTime;
+        } else if (currentTime >= 10 && currentTime <= 60) {
+            Text = "00:" + currentTime;
+        } else if (currentTime > 60 && currentTime < 600) {
+            int min = currentTime / 60;
+            int sen = currentTime % 60;
+            if (sen < 10) {
+                Text = "0" + min + ":0" + sen;
+            } else {
+                Text = "0" + min + ":" + sen;
+            }
+
+        } else {
+            int min = currentTime / 60;
+            int sen = currentTime % 60;
+            if (sen < 10) {
+                Text = min + ":0" + sen;
+            } else {
+                Text = min + ":" + sen;
+            }
+        }
+
+        // 43.设置文字居中，以左下角为基准的（x，y）就是这里的center baseline。具体的关于drawText需要查看https://blog.csdn.net/harvic880925/article/details/50423762/
+        timePaint.setTextAlign(Paint.Align.CENTER);
+        // 44.设置文字颜色
+        timePaint.setColor(Color.BLACK);
+        timePaint.setTextSize(16);
+        timePaint.setStrokeWidth(0);//清除画笔宽度
+        timePaint.clearShadowLayer();//清除阴影
+        // 45.文字边框
+        Rect bounds = new Rect();
+        // 46.获得绘制文字的边界矩形
+        timePaint.getTextBounds(Text, 0, Text.length(), bounds);
+        // 47.获取绘制Text时的四条线
+        Paint.FontMetricsInt fontMetrics = timePaint.getFontMetricsInt();
+        // 48.计算文字的基线
+        float x = this.centerX * 1.5f - 10;
+        float y = this.centerY + 10;
+        // 49.绘制表示进度的文字
+        canvas.drawText(Text, x, y, timePaint);
+    }
+
     public interface OnCurrentTimeListener {
         void currentTime(String time);
     }
@@ -314,6 +419,4 @@ public class ClockView extends View {
     public interface onFinishListener {
         void onFinish();
     }
-
-
 }

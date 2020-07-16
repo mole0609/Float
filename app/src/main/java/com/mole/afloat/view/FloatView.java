@@ -69,39 +69,6 @@ public class FloatView extends FrameLayout {
     private ClockView mClockView;
     private Vibrator mVibrator;
     private long[] pattern = {100, 400, 100, 400}; // 停止 开启 停止 开启
-
-    public FloatView(Context context) {
-        super(context);
-        initView();
-    }
-
-    private void initView() {
-        windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View floatView = inflater.inflate(R.layout.float_window_layout, null);
-        mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
-        mClockView = floatView.findViewById(R.id.clockView);
-        mClockView.setFinishListener(new ClockView.onFinishListener() {
-            @Override
-            public void onFinish() {
-                boolean isVibrate = getContext().getSharedPreferences(Constant.SAVED_SHARED_PREFERENCES, Context.MODE_PRIVATE).getBoolean("isVibrate", false);
-                LogUtil.d("isVibrate = " + isVibrate);
-                if (isVibrate) {
-                    mVibrator.vibrate(pattern, -1);
-                }
-                LogUtil.d("finish");
-            }
-        });
-        addView(floatView);
-        floatView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mGestureDetector.onTouchEvent(event);
-                return true; // 注：返回true才能完整接收触摸事件
-            }
-        });
-    }
-
     private Runnable mLongPressRunnable = new Runnable() {
         @Override
         public void run() {
@@ -115,7 +82,8 @@ public class FloatView extends FrameLayout {
         }
     };
 
-    private final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
+
+    private final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onDown(MotionEvent event) {
             LogUtil.d(TAG, "onDown-----" + getActionName(event.getAction()));
@@ -135,9 +103,18 @@ public class FloatView extends FrameLayout {
         }
 
         @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            LogUtil.d(TAG, "onSingleTapUp-----" + getActionName(e.getAction()));
-            Toast.makeText(getContext(), "this float window is clicked", Toast.LENGTH_SHORT).show();
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            LogUtil.d(TAG, "onSingleTapConfirmed-----" + getActionName(e.getAction()));
+            Toast.makeText(getContext(), "开始计时", Toast.LENGTH_SHORT).show();
+            mClockView.start(3000, 3000);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            LogUtil.d(TAG, "onDoubleTap-----" + getActionName(e.getAction()));
+            mClockView.cancel();
+            Toast.makeText(getContext(), "重置计时", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -162,9 +139,46 @@ public class FloatView extends FrameLayout {
             LogUtil.d(TAG, "onFling-----" + getActionName(e2.getAction()) + ",(" + e1.getX() + "," + e1.getY() + ") ,("
                     + e2.getX() + "," + e2.getY() + ")" + " ,(" + velocityX + "," + velocityY + ")");
             anchorToSide();
+            if (Math.abs(velocityY) > 10000 && e2.getY() < 50) {
+                LogUtil.d(TAG, "onFling-----" + velocityY);
+                FloatWindowManager.getInstance().dismissWindow();
+            }
             return false;
         }
     });
+
+    public FloatView(Context context) {
+        super(context);
+        initView();
+    }
+
+    private void initView() {
+        windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View floatView = inflater.inflate(R.layout.float_window_layout, null);
+        mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        mClockView = floatView.findViewById(R.id.clockView);
+        mClockView.setFinishListener(new ClockView.onFinishListener() {
+            @Override
+            public void onFinish() {
+                boolean isVibrate = getContext().getSharedPreferences(Constant.SAVED_SHARED_PREFERENCES, Context.MODE_PRIVATE).getBoolean("isVibrate", false);
+                LogUtil.d("isVibrate = " + isVibrate);
+                if (isVibrate) {
+                    mVibrator.vibrate(pattern, -1);
+                }
+                LogUtil.d("finish");
+            }
+        });
+
+        addView(floatView);
+        floatView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mGestureDetector.onTouchEvent(event);
+                return true; // 注：返回true才能完整接收触摸事件
+            }
+        });
+    }
 
     private String getActionName(int action) {
         String name = "";

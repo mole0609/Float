@@ -3,7 +3,6 @@
  */
 package com.mole.afloat;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -14,6 +13,8 @@ import android.view.WindowManager;
 import com.mole.afloat.permission.PermissionUtil;
 import com.mole.afloat.utils.LogUtil;
 import com.mole.afloat.view.FloatView;
+
+import static com.mole.afloat.view.ClockView.DEFAULT_SIZE;
 
 public class FloatWindowManager {
     private static final String TAG = "FloatWindowManager";
@@ -58,7 +59,7 @@ public class FloatWindowManager {
 
         Point size = new Point();
         windowManager.getDefaultDisplay().getSize(size);
-        LogUtil.d("size = " + size );
+        LogUtil.d("size = " + size);
         int screenWidth = size.x;
         int screenHeight = size.y;
 
@@ -78,12 +79,9 @@ public class FloatWindowManager {
         mParams.type = mType;
         mParams.format = PixelFormat.RGBA_8888;
         mParams.gravity = Gravity.LEFT | Gravity.TOP;
-        mParams.x = screenWidth - dp2px(context, 100);
-        mParams.y = screenHeight - dp2px(context, 171);
+        mParams.x = screenWidth / 2 - DEFAULT_SIZE / 2;
+        mParams.y = screenHeight / 2 - DEFAULT_SIZE / 2;
 
-
-//        ImageView imageView = new ImageView(mContext);
-//        imageView.setImageResource(R.drawable.app_icon);
         floatView = new FloatView(context);
         floatView.setParams(mParams);
         floatView.setIsShowing(true);

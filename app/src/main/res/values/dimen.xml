@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="width">10dp</dimen>
-    <dimen name="textSize">20dp</dimen>
+    <dimen name="textSize">8dp</dimen>
+    <dimen name="timeSize">8</dimen>
 </resources>
