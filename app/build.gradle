@@ -18,11 +18,19 @@ android {
         }
     }
 }
-
+def SUPPORT_VERSION = "27.1.1"
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.tengine.android:tenginekit:1.0.5'
+    implementation(name: 'open_ad_sdk', ext: 'aar')
+    implementation "com.android.support:support-v4:${SUPPORT_VERSION}"
 }

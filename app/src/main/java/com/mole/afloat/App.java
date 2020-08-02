@@ -53,5 +53,7 @@ public class App extends Application {
                 LogUtil.d("Lifecycle", activity.getLocalClassName() + " was Destroyed");
             }
         });
+        TTAdManagerHolder.init(this);
+
     }
 }

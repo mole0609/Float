@@ -75,7 +75,7 @@ public class FloatView extends FrameLayout {
             LogUtil.d(TAG, "LongPressRunnable");
             if (!App.isResumed) {
                 Intent intent = new Intent();
-                intent.setClassName("com.mole.afloat", "com.mole.afloat.MainActivity");
+                intent.setClassName("com.mole.afloat", "com.mole.afloat.activitis.MainActivity");
                 getContext().startActivity(intent);
                 LogUtil.d(TAG, "startActivity");
             }

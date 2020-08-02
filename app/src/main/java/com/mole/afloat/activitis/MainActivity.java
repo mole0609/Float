@@ -1,4 +1,4 @@
-package com.mole.afloat;
+package com.mole.afloat.activitis;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,6 +8,10 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+
+import com.mole.afloat.Constant;
+import com.mole.afloat.FloatWindowManager;
+import com.mole.afloat.R;
 
 public class MainActivity extends Activity {
     private SharedPreferences sp;
