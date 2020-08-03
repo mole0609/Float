@@ -26,7 +26,6 @@
 
     <!--demo场景用到的权限，不是必须的-->
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 
     <application
@@ -39,14 +38,14 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".activitis.SplashActivity"
+            android:name=".activities.SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activitis.MainActivity"
+        <activity android:name=".activities.MainActivity"
             android:configChanges="keyboard|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
@@ -64,6 +63,7 @@
             android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
             android:authorities="${applicationId}.TTMultiProvider"
             android:exported="false" />
+        <service android:name=".AssistiveTouchService"/>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.mole.afloat.activitis;
+package com.mole.afloat.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

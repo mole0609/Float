@@ -5,8 +5,8 @@ package com.mole.afloat.permission.rom;
 
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.LogUtil;
 
-import com.mole.afloat.utils.LogUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;

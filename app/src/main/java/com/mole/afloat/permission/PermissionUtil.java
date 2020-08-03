@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.LogUtil;
 
 import com.mole.afloat.permission.rom.HuaweiUtils;
 import com.mole.afloat.permission.rom.MeizuUtils;
@@ -14,7 +15,6 @@ import com.mole.afloat.permission.rom.OppoUtils;
 import com.mole.afloat.permission.rom.QikuUtils;
 import com.mole.afloat.permission.rom.RomUtils;
 import com.mole.afloat.utils.DialogUtil;
-import com.mole.afloat.utils.LogUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

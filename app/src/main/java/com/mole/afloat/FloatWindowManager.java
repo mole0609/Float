@@ -7,11 +7,10 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
+import android.util.LogUtil;
 import android.view.Gravity;
 import android.view.WindowManager;
 
-import com.mole.afloat.permission.PermissionUtil;
-import com.mole.afloat.utils.LogUtil;
 import com.mole.afloat.view.FloatView;
 
 import static com.mole.afloat.view.ClockView.DEFAULT_SIZE;
@@ -38,12 +37,8 @@ public class FloatWindowManager {
     }
 
 
-    public void applyOrShowFloatWindow(Context context) {
-        if (PermissionUtil.checkPermission(context)) {
-            showWindow(context);
-        } else {
-            PermissionUtil.applyPermission(context);
-        }
+    public void showFloatWindow(Context context) {
+        showWindow(context);
     }
 
     private void showWindow(Context context) {

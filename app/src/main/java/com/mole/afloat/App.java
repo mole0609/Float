@@ -3,11 +3,7 @@ package com.mole.afloat;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.mole.afloat.utils.LogUtil;
+import android.util.LogUtil;
 
 public class App extends Application {
     public static boolean isResumed;
@@ -35,12 +31,12 @@ public class App extends Application {
             @Override
             public void onActivityPaused(Activity activity) {
                 isResumed = false;
-                LogUtil.d("Lifecycle", activity.getLocalClassName() + " was Pauseed");
+                LogUtil.d("Lifecycle", activity.getLocalClassName() + " was Paused");
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
-                LogUtil.d("Lifecycle", activity.getLocalClassName() + " was Stoped");
+                LogUtil.d("Lifecycle", activity.getLocalClassName() + " was Stopped");
             }
 
             @Override

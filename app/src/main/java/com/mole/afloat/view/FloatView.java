@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Vibrator;
+import android.util.LogUtil;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -22,7 +23,6 @@ import com.mole.afloat.App;
 import com.mole.afloat.Constant;
 import com.mole.afloat.FloatWindowManager;
 import com.mole.afloat.R;
-import com.mole.afloat.utils.LogUtil;
 
 
 public class FloatView extends FrameLayout {

@@ -23,4 +23,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="震动开关"/>
+    <Button
+        android:id="@+id/btn_assistive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="虚拟按键"/>
 </LinearLayout>
